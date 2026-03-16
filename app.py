@@ -34,19 +34,17 @@ st.markdown("""
         padding-bottom: 2rem !important;
     }
 
-    /* Header */
+    /* Header - no box */
     .main-header {
-        background: #f8f9fb;
-        padding: 20px 28px;
-        border-radius: 10px;
+        padding: 0 0 16px;
         margin-bottom: 20px;
-        border: 1px solid #e2e4e9;
+        border-bottom: 1px solid #e2e4e9;
     }
     .main-header h1 {
-        font-size: 22px; font-weight: 700; margin: 0; color: #1a1d23;
-        letter-spacing: -0.3px;
+        font-size: 32px; font-weight: 700; margin: 0; color: #1a1d23;
+        letter-spacing: -0.5px;
     }
-    .main-header p { font-size: 13px; color: #6b7280; margin: 4px 0 0; }
+    .main-header p { font-size: 14px; color: #6b7280; margin: 6px 0 0; }
 
     /* Section headers */
     .section-header {
@@ -176,7 +174,7 @@ CHART_BG = "white"
 def cv_badge_html(cv_val, label="Workload Variation"):
     css = "cv-good" if cv_val < 5 else "cv-ok" if cv_val < 10 else "cv-bad"
     return (
-        f'<div style="text-align:center; margin: 8px 0 16px;">'
+        f'<div style="text-align:center; margin: 0 0 8px;">'
         f'<span class="cv-badge {css}">{label}: {cv_val:.1f}%</span>'
         f'<br><span style="font-size:11px; color:#999;">Lower = more balanced. Under 5% is strong.</span>'
         f'</div>'
@@ -189,8 +187,8 @@ def std_layout(title_text, height=340):
         plot_bgcolor="#ffffff",
         paper_bgcolor="#ffffff",
         font=dict(color="#1a1d23"),
-        yaxis=dict(gridcolor="#f0f0f0"),
-        xaxis=dict(tickangle=-20),
+        yaxis=dict(gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
+        xaxis=dict(tickangle=-20, tickfont=dict(color="#1a1d23")),
         showlegend=False,
     )
 
@@ -228,15 +226,8 @@ with st.sidebar:
     ent_reps = reps_df[reps_df["Segment"] == ent_label]["Rep_Name"].tolist()
     mm_reps = reps_df[reps_df["Segment"] == mm_label]["Rep_Name"].tolist()
 
-    st.markdown(f"**Enterprise Reps** ({len(ent_reps)})")
-    for r in ent_reps:
-        loc = reps_df[reps_df["Rep_Name"] == r]["Location"].values[0]
-        st.markdown(f"<span style='font-size:13px;'>• {r} ({loc})</span>", unsafe_allow_html=True)
-
-    st.markdown(f"**Mid-Market Reps** ({len(mm_reps)})")
-    for r in mm_reps:
-        loc = reps_df[reps_df["Rep_Name"] == r]["Location"].values[0]
-        st.markdown(f"<span style='font-size:13px;'>• {r} ({loc})</span>", unsafe_allow_html=True)
+    st.markdown(f"**Enterprise Reps:** {len(ent_reps)}")
+    st.markdown(f"**Mid-Market Reps:** {len(mm_reps)}")
 
 # ─── SEGMENTATION & DISTRIBUTION ─────────────────────────────────────────────
 ent_accounts = accounts_df[accounts_df["Num_Employees"] >= threshold].copy()
@@ -274,9 +265,8 @@ mm_risk_cv = calc_cv(mm_summary["High Risk (75+)"].values)
 st.markdown(
     '<div class="main-header">'
     '<h1>🎯 Territory Slicer</h1>'
-    f'<p>{len(accounts_df)} accounts · {len(reps_df)} reps · '
-    f'{fmt_arr(accounts_df["ARR"].sum())} total ARR · '
-    f'Threshold: {threshold:,} employees</p>'
+    f'<p>Balance sales territory planning by toggling the employee threshold to segment territories based on size and ARR. '
+    f'{len(accounts_df)} accounts · {len(reps_df)} reps · {fmt_arr(accounts_df["ARR"].sum())} total ARR</p>'
     '</div>',
     unsafe_allow_html=True,
 )
@@ -324,11 +314,6 @@ with col_l:
         text=[fmt_arr(v) for v in ent_summary["Total ARR"]],
         textposition="outside", textfont=dict(size=11),
     ))
-    if ent_summary["Total ARR"].sum() > 0:
-        avg = ent_summary["Total ARR"].mean()
-        fig.add_hline(y=avg, line_dash="dash", line_color="#e74c3c", line_width=1.5,
-                      annotation_text=f"Avg: {fmt_arr(avg)}", annotation_position="top right",
-                      annotation_font_size=11, annotation_font_color="#e74c3c")
     fig.update_layout(**std_layout("Enterprise Reps — Total ARR"))
     fig.update_yaxes(tickformat="$,.0f")
     st.plotly_chart(fig, use_container_width=True)
@@ -342,11 +327,6 @@ with col_r:
         text=[fmt_arr(v) for v in mm_summary["Total ARR"]],
         textposition="outside", textfont=dict(size=11),
     ))
-    if mm_summary["Total ARR"].sum() > 0:
-        avg = mm_summary["Total ARR"].mean()
-        fig.add_hline(y=avg, line_dash="dash", line_color="#e74c3c", line_width=1.5,
-                      annotation_text=f"Avg: {fmt_arr(avg)}", annotation_position="top right",
-                      annotation_font_size=11, annotation_font_color="#e74c3c")
     fig.update_layout(**std_layout("Mid-Market Reps — Total ARR"))
     fig.update_yaxes(tickformat="$,.0f")
     st.plotly_chart(fig, use_container_width=True)
@@ -369,10 +349,6 @@ with col_l:
         marker_color=ENT_COLORS * 2,
         text=ent_summary["Accounts"], textposition="outside", textfont=dict(size=12),
     ))
-    avg_accts = ent_summary["Accounts"].mean()
-    fig.add_hline(y=avg_accts, line_dash="dash", line_color="#e74c3c", line_width=1.5,
-                  annotation_text=f"Avg: {avg_accts:.0f}", annotation_position="top right",
-                  annotation_font_size=11, annotation_font_color="#e74c3c")
     fig.update_layout(**std_layout("Enterprise Reps — Account Count"))
     fig.update_yaxes(title="# of Accounts")
     st.plotly_chart(fig, use_container_width=True)
@@ -384,10 +360,6 @@ with col_r:
         marker_color=MM_COLORS,
         text=mm_summary["Accounts"], textposition="outside", textfont=dict(size=12),
     ))
-    avg_accts = mm_summary["Accounts"].mean()
-    fig.add_hline(y=avg_accts, line_dash="dash", line_color="#e74c3c", line_width=1.5,
-                  annotation_text=f"Avg: {avg_accts:.0f}", annotation_position="top right",
-                  annotation_font_size=11, annotation_font_color="#e74c3c")
     fig.update_layout(**std_layout("Mid-Market Reps — Account Count"))
     fig.update_yaxes(title="# of Accounts")
     st.plotly_chart(fig, use_container_width=True)
@@ -416,7 +388,7 @@ with col_l:
         title=dict(text="Enterprise Reps — Risk Breakdown", font=dict(size=14)),
         height=360, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0"),
+        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=11)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -435,7 +407,7 @@ with col_r:
         title=dict(text="Mid-Market Reps — Risk Breakdown", font=dict(size=14)),
         height=360, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0"),
+        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=11)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -490,7 +462,7 @@ with col_l:
         title=dict(text="Enterprise Reps — Seat Penetration", font=dict(size=14)),
         height=380, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0"),
+        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -504,7 +476,7 @@ with col_r:
         title=dict(text="Mid-Market Reps — Seat Penetration", font=dict(size=14)),
         height=380, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0"),
+        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -545,15 +517,12 @@ with col_l:
         text=[fmt_arr(v) for v in current_data["ARR"]],
         textposition="outside", textfont=dict(size=10),
     ))
-    avg_c = current_data["ARR"].mean()
-    fig.add_hline(y=avg_c, line_dash="dash", line_color="#e74c3c", line_width=1.5,
-                  annotation_text=f"Avg: {fmt_arr(avg_c)}", annotation_position="top right",
-                  annotation_font_size=11, annotation_font_color="#e74c3c")
     fig.update_layout(
         title=dict(text=f"BEFORE — Generalist (CV: {current_cv:.1f}%)", font=dict(size=13)),
         height=340, margin=dict(t=50, b=50, l=40, r=20),
-        yaxis=dict(tickformat="$,.0f", gridcolor="#f0f0f0"),
-        xaxis=dict(tickangle=-25), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
+        yaxis=dict(tickformat="$,.0f", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
+        xaxis=dict(tickangle=-25, tickfont=dict(color="#1a1d23")),
+        plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
     )
     st.plotly_chart(fig, use_container_width=True)
 
@@ -567,19 +536,12 @@ with col_r:
         text=[fmt_arr(v) for v in all_new["Total ARR"]],
         textposition="outside", textfont=dict(size=10),
     ))
-    if ent_summary["Total ARR"].sum() > 0:
-        fig.add_hline(y=ent_summary["Total ARR"].mean(), line_dash="dot", line_color=ENT_MAIN, line_width=1,
-                      annotation_text=f"Ent avg: {fmt_arr(ent_summary['Total ARR'].mean())}",
-                      annotation_position="top left", annotation_font_size=10, annotation_font_color=ENT_MAIN)
-    if mm_summary["Total ARR"].sum() > 0:
-        fig.add_hline(y=mm_summary["Total ARR"].mean(), line_dash="dot", line_color=MM_MAIN, line_width=1,
-                      annotation_text=f"MM avg: {fmt_arr(mm_summary['Total ARR'].mean())}",
-                      annotation_position="bottom right", annotation_font_size=10, annotation_font_color=MM_MAIN)
     fig.update_layout(
         title=dict(text=f"AFTER — Segmented (Ent CV: {ent_cv:.1f}% · MM CV: {mm_cv:.1f}%)", font=dict(size=13)),
         height=340, margin=dict(t=50, b=50, l=40, r=20),
-        yaxis=dict(tickformat="$,.0f", gridcolor="#f0f0f0"),
-        xaxis=dict(tickangle=-25), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
+        yaxis=dict(tickformat="$,.0f", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
+        xaxis=dict(tickangle=-25, tickfont=dict(color="#1a1d23")),
+        plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
     )
     st.plotly_chart(fig, use_container_width=True)
 
