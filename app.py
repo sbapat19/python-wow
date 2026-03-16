@@ -388,7 +388,7 @@ with col_l:
         title=dict(text="Enterprise Reps — Risk Breakdown", font=dict(size=14)),
         height=360, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
+        yaxis=dict(title=dict(text="# of Accounts", font=dict(color="#1a1d23")), gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=11)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -407,7 +407,7 @@ with col_r:
         title=dict(text="Mid-Market Reps — Risk Breakdown", font=dict(size=14)),
         height=360, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
+        yaxis=dict(title=dict(text="# of Accounts", font=dict(color="#1a1d23")), gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=11)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -416,10 +416,10 @@ with col_r:
 # ─── SEAT PENETRATION ────────────────────────────────────────────────────────
 st.markdown('<div class="section-header">Seat Penetration by Rep</div>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="section-desc">ARR per marketer across each rep\'s assigned accounts, grouped into '
-    'business-meaningful buckets. Under $20/marketer = barely landed (high expansion opportunity). '
-    '$20–$50 = early adoption. $50–$100 = growing. $100+ = well-penetrated. '
-    'Reps with more low-penetration accounts have greater expansion headroom.</p>',
+    '<p class="section-desc">Assuming per-seat pricing, ARR ÷ Marketers approximates how many seats '
+    'have been sold at each account. Lower values suggest low seat adoption — these accounts have '
+    'significant room for expansion. Higher values indicate deeper adoption with less immediate growth headroom. '
+    'Buckets: &lt;$20 = barely landed, $20–$50 = early adoption, $50–$100 = growing, $100+ = well-penetrated.</p>',
     unsafe_allow_html=True,
 )
 
@@ -462,7 +462,7 @@ with col_l:
         title=dict(text="Enterprise Reps — Seat Penetration", font=dict(size=14)),
         height=380, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
+        yaxis=dict(title=dict(text="# of Accounts", font=dict(color="#1a1d23")), gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
     )
     st.plotly_chart(fig, use_container_width=True)
@@ -476,7 +476,7 @@ with col_r:
         title=dict(text="Mid-Market Reps — Seat Penetration", font=dict(size=14)),
         height=380, margin=dict(t=80, b=50, l=40, r=20),
         xaxis=dict(tickangle=-20), plot_bgcolor="#ffffff", paper_bgcolor="#ffffff", font=dict(color="#1a1d23"),
-        yaxis=dict(title="# of Accounts", gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23"), titlefont=dict(color="#1a1d23")),
+        yaxis=dict(title=dict(text="# of Accounts", font=dict(color="#1a1d23")), gridcolor="#f0f0f0", tickfont=dict(color="#1a1d23")),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
     )
     st.plotly_chart(fig, use_container_width=True)
