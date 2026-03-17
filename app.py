@@ -85,12 +85,17 @@ st.markdown("""
     section[data-testid="stSidebar"] > div {
         padding: 0 1.2rem;
     }
-    section[data-testid="stSidebar"] * {
-        color: #1a1d23 !important;
-    }
     section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
     section[data-testid="stSidebar"] label,
-    section[data-testid="stSidebar"] span {
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3,
+    section[data-testid="stSidebar"] h4,
+    section[data-testid="stSidebar"] li,
+    section[data-testid="stSidebar"] strong,
+    section[data-testid="stSidebar"] b {
+        color: #1a1d23 !important;
         font-size: 14px !important;
     }
     section[data-testid="stSidebar"] input {
@@ -98,7 +103,7 @@ st.markdown("""
         background-color: #ffffff !important;
     }
 
-    /* Number input +/- buttons in sidebar */
+    /* Sidebar number input +/- buttons */
     section[data-testid="stSidebar"] button[data-testid="stNumberInputStepUp"],
     section[data-testid="stSidebar"] button[data-testid="stNumberInputStepDown"],
     section[data-testid="stSidebar"] [data-testid="stNumberInput"] button {
@@ -106,18 +111,15 @@ st.markdown("""
         color: #1a1d23 !important;
     }
 
-    /* Tooltip / help icons */
-    .stTooltipIcon, [data-testid="stTooltipIcon"] {
-        color: #6b7280 !important;
-    }
-    .stTooltipIcon svg, [data-testid="stTooltipIcon"] svg {
-        fill: #6b7280 !important;
-        stroke: #6b7280 !important;
+    /* Tooltip / help icons - subtle gray */
+    [data-testid="stTooltipIcon"] svg {
+        fill: #9ca3af !important;
+        stroke: #9ca3af !important;
     }
 
-    /* Tab labels - ensure inactive tabs are visible */
+    /* Tab labels */
     .stTabs [data-baseweb="tab-list"] button {
-        color: #6b7280 !important;
+        color: #9ca3af !important;
     }
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {
         color: #1a1d23 !important;
@@ -264,9 +266,11 @@ CHART_BG = "white"
 
 def cv_badge_html(cv_val, label="Workload Variation"):
     css = "cv-good" if cv_val < 5 else "cv-ok" if cv_val < 10 else "cv-bad"
+    # Show 2 decimal places so near-zero values don't round to 0.0%
+    display_val = f"{cv_val:.2f}" if cv_val < 1 else f"{cv_val:.1f}"
     return (
         f'<div style="text-align:center; margin: 0 0 8px;">'
-        f'<span class="cv-badge {css}">{label}: {cv_val:.1f}%</span>'
+        f'<span class="cv-badge {css}">{label}: {display_val}%</span>'
         f'<br><span style="font-size:11px; color:#999;">Lower = more balanced. Under 5% is strong.</span>'
         f'</div>'
     )
@@ -432,7 +436,8 @@ st.markdown(
 st.markdown('<div class="section-header">Total ARR per Rep</div>', unsafe_allow_html=True)
 st.markdown(
     '<p class="section-desc">Total managed ARR assigned to each rep after the greedy balancing algorithm. '
-    'The dashed line shows the segment average. Workload Variation (CV) measures how evenly ARR is spread.</p>',
+    'Workload Variation is measured by the coefficient of variation (CV) — standard deviation ÷ mean × 100 — '
+    'which measures how evenly ARR is spread.</p>',
     unsafe_allow_html=True,
 )
 
